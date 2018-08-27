@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ public class BluetoothConnectionService {
     ProgressDialog mProgressDialog;
 
     private ConnectedThread mConnectedThread;
+    private Intent mIntent = new Intent();
 
     public BluetoothConnectionService(Context context) {
         mContext = context;
@@ -163,6 +165,9 @@ public class BluetoothConnectionService {
                     bytes = mmInStream.read(buffer);
                     String incomingMessage = new String(buffer, 0, bytes);
                     Log.d(TAG, "InputStream " + incomingMessage);
+                    mIntent.putExtra("SERVER_RESPONSE", incomingMessage);
+                    mIntent.setAction("com.android.activity.SEND_DATA");
+                    mContext.sendBroadcast(mIntent);
                 } catch (IOException e) {
                     Log.e(TAG, "write: Error reading: " + e.getMessage());
                     break;

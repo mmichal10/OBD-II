@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     BluetoothDevice mBTDevice;
 
-
     ListView lvNewDevices;
 
     // Create a BroadcastReceiver for ACTION_FOUND
@@ -84,11 +83,22 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     };
 
+    private final BroadcastReceiver mMessageRevicer = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String response = intent.getStringExtra("SERVER_RESPONSE");
+            Log.d(TAG, "Server response in UT thread");
+            TextView responseTV = (TextView)findViewById(R.id.serverResponseTV);
+            responseTV.setText(response);
+        }
+    };
+
     @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy: called.");
         super.onDestroy();
         unregisterReceiver(mBroadcastReceiver1);
+        unregisterReceiver(mMessageRevicer);
     }
 
     @Override
@@ -119,6 +129,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 enableDisableBT();
             }
         });
+
+        registerReceiver(mMessageRevicer, new IntentFilter("com.android.activity.SEND_DATA"));
 
         btnStartConnection.setOnClickListener(new View.OnClickListener() {
             @Override
