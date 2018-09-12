@@ -25,25 +25,12 @@
         tools:layout_editor_absoluteX="223dp"
         tools:layout_editor_absoluteY="16dp" />
 
-    <EditText
-        android:id="@+id/messageText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="155dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="insert text" />
+    /**/
 
-    <Button
-        android:id="@+id/sendBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/messageText"
-        android:layout_marginEnd="23dp"
-        android:text="SEND" />
+    <Spinner
+        android:id="@+id/availableCommands"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <ListView
         android:id="@+id/newDevices"
@@ -58,8 +45,8 @@
         android:id="@+id/startConnectionBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/messageText"
         android:layout_alignParentStart="true"
+        android:layout_below="@+id/newDevices"
         android:text="Start connection" />
 
     <TextView
@@ -68,7 +55,7 @@
         android:layout_height="32dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="101dp"
+        android:layout_marginBottom="29dp"
         android:text="Server response:" />
 
     <TextView
@@ -79,4 +66,29 @@
         android:layout_alignTop="@+id/textView"
         android:layout_marginStart="148dp"
         android:text="no message yet" />
+
+    <Button
+        android:id="@+id/fuelBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/textView"
+        android:layout_below="@+id/startConnectionBtn"
+        android:text="get fuel" />
+
+    <Button
+        android:id="@+id/temperatureBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/startConnectionBtn"
+        android:layout_centerHorizontal="true"
+        android:text="get temerature" />
+
+    <Button
+        android:id="@+id/rpmBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/serverResponseTV"
+        android:layout_below="@+id/startConnectionBtn"
+        android:text="getRPM" />
+
 </RelativeLayout>

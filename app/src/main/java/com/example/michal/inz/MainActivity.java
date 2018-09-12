@@ -16,9 +16,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,9 +47,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     BluetoothConnectionService mBluetoothConnection;
 
     Button btnStartConnection;
-    Button btnSend;
 
-    EditText etSend;
 
     public ArrayList<BluetoothDevice> mBTDevices = new ArrayList<>();
 
@@ -56,6 +56,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     BluetoothDevice mBTDevice;
 
     ListView lvNewDevices;
+
+    Button fuelBtn;
+    Button rpmBtn;
+    Button temperatureBtn;
 
     // Create a BroadcastReceiver for ACTION_FOUND
     private final BroadcastReceiver mBroadcastReceiver1 = new BroadcastReceiver() {
@@ -111,8 +115,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         mBTDevices = new ArrayList<>();
 
         btnStartConnection = (Button) findViewById(R.id.startConnectionBtn);
-        btnSend = (Button) findViewById(R.id.sendBtn);
-        etSend = (EditText) findViewById(R.id.messageText);
+
+        fuelBtn = (Button)findViewById(R.id.fuelBtn) ;
+        temperatureBtn = (Button)findViewById(R.id.temperatureBtn) ;
+        rpmBtn = (Button)findViewById(R.id.rpmBtn);
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -120,7 +126,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
         mBluetoothConnection = new BluetoothConnectionService(this);
-
 
         btnONOFF.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,14 +144,35 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         });
 
-        btnSend.setOnClickListener(new View.OnClickListener() {
+        fuelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String msg = etSend.getText().toString();
-                msg.concat(msg.endsWith("\r")? "": "\r");
-                byte[] bytes = msg.getBytes(Charset.defaultCharset());
                 try {
-                    mBluetoothConnection.write(bytes);
+                    mBluetoothConnection.write(0);
+                } catch (Exception e) {
+                    //Toast.makeText(this, "Socket inactive", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Socket inactive", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        rpmBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    mBluetoothConnection.write(1);
+                } catch (Exception e) {
+                    //Toast.makeText(this, "Socket inactive", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Socket inactive", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        temperatureBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    mBluetoothConnection.write(2);
                 } catch (Exception e) {
                     //Toast.makeText(this, "Socket inactive", Toast.LENGTH_LONG).show();
                     Toast.makeText(getApplicationContext(), "Socket inactive", Toast.LENGTH_LONG).show();
