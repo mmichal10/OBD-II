@@ -12,7 +12,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ParcelUuid;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -60,6 +63,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     Button fuelBtn;
     Button rpmBtn;
     Button temperatureBtn;
+
+    private Toolbar toolbar;
+    private ViewPager viewPager;
+    private ViewPagerAdapter viewPagerAdapter;
+    private TabLayout tabLayout;
 
     // Create a BroadcastReceiver for ACTION_FOUND
     private final BroadcastReceiver mBroadcastReceiver1 = new BroadcastReceiver() {
@@ -109,6 +117,20 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        toolbar = findViewById(R.id.toolBar);
+        setSupportActionBar(toolbar);
+
+        viewPager = findViewById(R.id.pager);
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(viewPagerAdapter);
+
+        tabLayout = findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+
+
+
+
         Button btnONOFF = (Button) findViewById(R.id.BT_ON_OFF);
         btnEnableDisable_Discoverable = (Button) findViewById(R.id.discover_BTN);
         lvNewDevices = (ListView) findViewById(R.id.newDevices);
