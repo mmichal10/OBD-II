@@ -3,14 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.ParamsFragment">
+    tools:context=".fragments.SettingsFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/txt_display"
-        android:text="If you see this text, sth went wrong"
-        />
+        android:text="Ustawienia wciaz sa 'under construction'" />
 
 </FrameLayout>

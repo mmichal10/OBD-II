@@ -1,28 +1,47 @@
 package com.example.michal.inz;
 
-import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.util.Log;
+
+import com.example.michal.inz.fragments.FragmentName;
+import com.example.michal.inz.fragments.MapsFragment;
+import com.example.michal.inz.fragments.ParamsFragment;
+import com.example.michal.inz.fragments.SettingsFragment;
 
 public class ViewPagerAdapter extends FragmentPagerAdapter {
+
+    private ParamsFragment paramsFragment;
+    private MapsFragment mapsFragment;
+    private SettingsFragment settingsFragment;
+
     public ViewPagerAdapter(FragmentManager fm) {
         super(fm);
+        paramsFragment = new ParamsFragment();
+        mapsFragment = new MapsFragment();
+        settingsFragment = new SettingsFragment();
     }
 
     @Override
     public Fragment getItem(int position) {
-        ParamsFragment paramsFragment = new ParamsFragment();
+        switch (position) {
+            case 0:
+                return paramsFragment;
+            case 1:
+                return mapsFragment;
+            case 2:
+                return settingsFragment;
+        }
 
-        position = position + 1;
-
+        return paramsFragment;
+       /*
         Bundle bundle = new Bundle();
         bundle.putString("message", "Fragment " + position);
 
         paramsFragment.setArguments(bundle);
-
-        return paramsFragment;
+        */
     }
 
     @Override
@@ -33,8 +52,14 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
-        position += 1;
+        FragmentName fragment;
+        try {
+            fragment = (FragmentName) this.getItem(position);
+        } catch (Exception e) {
+            Log.e("PagerAdapter", e.getMessage());
+            return "Error name";
+        }
 
-        return "Fragment " + position;
+        return fragment.getName();
     }
 }
