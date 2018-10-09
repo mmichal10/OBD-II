@@ -8,6 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.github.pires.obd.commands.engine.RPMCommand;
+import com.github.pires.obd.commands.fuel.FuelLevelCommand;
+import com.github.pires.obd.commands.temperature.EngineCoolantTemperatureCommand;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -160,6 +164,9 @@ public class BluetoothConnectionService {
 
             int bytes;
 
+            return;
+
+            /*
             while (true) {
                 try {
                     bytes = mmInStream.read(buffer);
@@ -173,7 +180,49 @@ public class BluetoothConnectionService {
                     break;
                 }
             }
+            */
 
+        }
+
+        public void getTemperature() {
+            EngineCoolantTemperatureCommand temp = new EngineCoolantTemperatureCommand();
+            try {
+                temp.run(mmInStream, mmOutStream);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            mIntent.putExtra("SERVER_RESPONSE", String.valueOf(temp.getTemperature()));
+            mIntent.setAction("com.android.activity.SEND_DATA");
+            mContext.sendBroadcast(mIntent);
+        }
+        public void getRpm() {
+            RPMCommand rpm = new RPMCommand();
+            try {
+                rpm.run(mmInStream, mmOutStream);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            mIntent.putExtra("SERVER_RESPONSE", String.valueOf(rpm.getRPM()));
+            mIntent.setAction("com.android.activity.SEND_DATA");
+            mContext.sendBroadcast(mIntent);
+        }
+        public void getFuel() {
+            FuelLevelCommand fuel = new FuelLevelCommand();
+            try {
+                fuel.run(mmInStream, mmOutStream);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            mIntent.putExtra("SERVER_RESPONSE", String.valueOf(fuel.getFuelLevel()));
+            mIntent.setAction("com.android.activity.SEND_DATA");
+            mContext.sendBroadcast(mIntent);
         }
 
         public void write(byte[] bytes) {
@@ -204,8 +253,17 @@ public class BluetoothConnectionService {
         mConnectedThread.start();
     }
 
-    public void write(byte[] out) {
-        Log.d(TAG, "write: Write called");
-        mConnectedThread.write(out);
+    public void write(int cmd_id) {
+        switch (cmd_id) {
+            case 0:
+                mConnectedThread.getFuel();
+                break;
+            case 1:
+                mConnectedThread.getRpm();
+                break;
+            case 2:
+                mConnectedThread.getTemperature();
+                break;
+        }
     }
 }
