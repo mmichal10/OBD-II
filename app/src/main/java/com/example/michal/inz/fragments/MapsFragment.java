@@ -13,7 +13,7 @@ import com.example.michal.inz.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MapsFragment extends Fragment implements FragmentName{
+public class MapsFragment extends Fragment implements FragmentName {
 
 
     public MapsFragment() {

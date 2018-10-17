@@ -160,28 +160,7 @@ public class BluetoothConnectionService {
         }
 
         public void run() {
-            byte[] buffer = new byte[1024];
-
-            int bytes;
-
             return;
-
-            /*
-            while (true) {
-                try {
-                    bytes = mmInStream.read(buffer);
-                    String incomingMessage = new String(buffer, 0, bytes);
-                    Log.d(TAG, "InputStream " + incomingMessage);
-                    mIntent.putExtra("SERVER_RESPONSE", incomingMessage);
-                    mIntent.setAction("com.android.activity.SEND_DATA");
-                    mContext.sendBroadcast(mIntent);
-                } catch (IOException e) {
-                    Log.e(TAG, "write: Error reading: " + e.getMessage());
-                    break;
-                }
-            }
-            */
-
         }
 
         public void getTemperature() {

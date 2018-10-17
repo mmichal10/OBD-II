@@ -1,15 +1,10 @@
-package com.example.michal.inz;
+package com.example.michal.inz.fragments;
 
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
-
-import com.example.michal.inz.fragments.FragmentName;
-import com.example.michal.inz.fragments.MapsFragment;
-import com.example.michal.inz.fragments.ParamsFragment;
-import com.example.michal.inz.fragments.SettingsFragment;
 
 public class ViewPagerAdapter extends FragmentPagerAdapter {
 
@@ -53,13 +48,14 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         FragmentName fragment;
+        String name = "Error name";
         try {
             fragment = (FragmentName) this.getItem(position);
+            name = fragment.getName();
         } catch (Exception e) {
             Log.e("PagerAdapter", e.getMessage());
-            return "Error name";
         }
 
-        return fragment.getName();
+        return name;
     }
 }
