@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.SettingsFragment">
+
+    <TableRow
+        android:stretchColumns="*"
+        android:layout_height="wrap_content"
+        >
+
+        <Switch
+            android:id="@+id/switch_bluetooth"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="I/O BT"
+            android:layout_column="1"
+            android:layout_weight="1"
+            />
+
+        <Button
+            android:id="@+id/btn_show_devices"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Show paired devices"
+            android:layout_column="2"
+            android:layout_weight="1"
+            />
+
+    </TableRow>
+
+    <TableRow
+        android:stretchColumns="*"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+
+        <ListView
+            android:id="@+id/lv_devices"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_column="1"
+            />
+
+    </TableRow>
+
+
+    <TableRow
+        android:stretchColumns="*"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+
+        <Button
+            android:id="@+id/btn_connect"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Start connection"
+            android:layout_column="1"
+            />
+
+    </TableRow>
+
+</TableLayout>
