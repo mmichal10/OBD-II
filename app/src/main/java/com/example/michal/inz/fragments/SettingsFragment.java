@@ -91,7 +91,7 @@ public class SettingsFragment extends Fragment implements FragmentName, AdapterV
         mDevicesListView.setOnItemClickListener(SettingsFragment.this);
 
         // Connect
-        mBtConnectionService = new BluetoothConnectionService(getContext());
+        //mBtConnectionService = new BluetoothConnectionService(getContext());
         mConnectButton = view.findViewById(R.id.btn_connect);
         mConnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,7 +143,16 @@ public class SettingsFragment extends Fragment implements FragmentName, AdapterV
 
         Log.d(TAG, "Starting connection thread");
 
-        mBtConnectionService.startClient(mElmAdapterDevice, UUID);
+        try {
+            Intent intent = new Intent();
+            intent.setClass(getContext(), BluetoothConnectionService.class);
+            intent.putExtra("elmDevice", mElmAdapterDevice);
+            intent.putExtra("UUID", myUUID);
+            getActivity().startService(intent);
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+            Toast.makeText(getContext(), "Socket inactive", Toast.LENGTH_LONG).show();
+        }
     }
 
 

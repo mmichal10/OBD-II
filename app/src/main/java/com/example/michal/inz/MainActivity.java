@@ -90,62 +90,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
 
-
-        btnStartConnection = (Button) findViewById(R.id.startConnectionBtn);
-
-        fuelBtn = (Button)findViewById(R.id.fuelBtn) ;
-        temperatureBtn = (Button)findViewById(R.id.temperatureBtn) ;
-        rpmBtn = (Button)findViewById(R.id.rpmBtn);
-
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        mBluetoothConnection = new BluetoothConnectionService(this);
-
-        registerReceiver(mMessageRevicer, new IntentFilter("com.android.activity.SEND_DATA"));
-
-        btnStartConnection.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startConnection();
-            }
-        });
-
-        fuelBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    mBluetoothConnection.write(0);
-                } catch (Exception e) {
-                    //Toast.makeText(this, "Socket inactive", Toast.LENGTH_LONG).show();
-                    Toast.makeText(getApplicationContext(), "Socket inactive", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
-        rpmBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    mBluetoothConnection.write(1);
-                } catch (Exception e) {
-                    //Toast.makeText(this, "Socket inactive", Toast.LENGTH_LONG).show();
-                    Toast.makeText(getApplicationContext(), "Socket inactive", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
-        temperatureBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    mBluetoothConnection.write(2);
-                } catch (Exception e) {
-                    //Toast.makeText(this, "Socket inactive", Toast.LENGTH_LONG).show();
-                    Toast.makeText(getApplicationContext(), "Socket inactive", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
+        return;
     }
 
     public void startConnection(){
@@ -160,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         Log.d(TAG, "Starting connection thread");
 
-        mBluetoothConnection.startClient(device, uuid);
+        //mBluetoothConnection.startClient(device, uuid);
     }
 
     @Override
