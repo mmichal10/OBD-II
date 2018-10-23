@@ -1,16 +1,17 @@
-package com.example.michal.inz;
+package com.example.michal.inz.bt_connection;
 
 import android.app.IntentService;
-import android.app.ProgressDialog;
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
+import android.os.ResultReceiver;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.github.pires.obd.commands.SpeedCommand;
 import com.github.pires.obd.commands.engine.RPMCommand;
 import com.github.pires.obd.commands.fuel.FuelLevelCommand;
 import com.github.pires.obd.commands.temperature.EngineCoolantTemperatureCommand;
@@ -24,11 +25,17 @@ import java.nio.charset.Charset;
 import java.util.UUID;
 
 public class BluetoothConnectionService extends IntentService {
+
+    public static final String STATS_UPDATE_INTENT = "michal.inz.intent.action.update";
+
     public static boolean isRuuning;
+    public static final String TEMPERATURE_TAG = "TEMP";
+    public static final String RPM_TAG = "RPM";
+    public static final String FUEL_TAG = "FUEL";
+    public static final String SPEED_TAG = "SPEED";
 
     public final String TAG = "connectionService";
 
-    private BluetoothAdapter mBluetoothAdapter;
     Context mContext;
     BluetoothSocket mSocket;
 
@@ -38,9 +45,12 @@ public class BluetoothConnectionService extends IntentService {
     private BluetoothDevice mmDevice;
     private UUID deviceUUID;
 
-    private Intent mIntent = new Intent();
-
     private long statsUpdateFrequency;
+
+    private ResultReceiver receiver;
+
+    private Intent mStatResponseIntent;
+
 
     public BluetoothConnectionService() {
         super("Bluetooth connection service");
@@ -52,9 +62,19 @@ public class BluetoothConnectionService extends IntentService {
         Log.d(TAG, "Preparing bluetooth connection service");
 
         mContext = getApplicationContext();
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         mmDevice = intent.getParcelableExtra("elmDevice");
         deviceUUID = UUID.fromString(intent.getStringExtra("UUID"));
+        receiver = intent.getParcelableExtra("receiver");
+
+        mStatResponseIntent = new Intent();
+        mStatResponseIntent.setAction(STATS_UPDATE_INTENT);
+
+        SystemClock.sleep(5000);
+        for (int i = 0; i < 10; i++) {
+            mStatResponseIntent.putExtra("resultReceiverTag", "test " + i);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(mStatResponseIntent);
+            Log.d(TAG, "message sent " + i);
+        }
 
         if (!establishConnection()) {
             cleanup();
@@ -63,6 +83,8 @@ public class BluetoothConnectionService extends IntentService {
         }
 
         Log.d(TAG, "Successfully prepared bluetooth connection service");
+
+        mStatResponseIntent = new Intent();
 
         getStatistics();
     }
@@ -75,6 +97,10 @@ public class BluetoothConnectionService extends IntentService {
 
             updateStats();
 
+            mStatResponseIntent.setAction(STATS_UPDATE_INTENT);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(mStatResponseIntent);
+
+
             SystemClock.sleep(statsUpdateFrequency);
         }
 
@@ -85,6 +111,7 @@ public class BluetoothConnectionService extends IntentService {
         getTemperature();
         getFuel();
         getRpm();
+        getSpeed();
     }
 
     private boolean establishConnection() {
@@ -206,40 +233,57 @@ public class BluetoothConnectionService extends IntentService {
             temp.run(mInStream, mOutStream);
         } catch (IOException e) {
             e.printStackTrace();
+            return;
         } catch (InterruptedException e) {
             e.printStackTrace();
+            return;
         }
 
-        mIntent.putExtra("SERVER_RESPONSE", String.valueOf(temp.getTemperature()));
-        mIntent.setAction("com.android.activity.SEND_DATA");
-        mContext.sendBroadcast(mIntent);
+        mStatResponseIntent.putExtra(TEMPERATURE_TAG, temp.getTemperature());
     }
+
     public void getRpm() {
         RPMCommand rpm = new RPMCommand();
         try {
             rpm.run(mInStream, mOutStream);
         } catch (IOException e) {
             e.printStackTrace();
+            return;
         } catch (InterruptedException e) {
             e.printStackTrace();
+            return;
         }
-        mIntent.putExtra("SERVER_RESPONSE", String.valueOf(rpm.getRPM()));
-        mIntent.setAction("com.android.activity.SEND_DATA");
-        mContext.sendBroadcast(mIntent);
+        mStatResponseIntent.putExtra(RPM_TAG, rpm.getRPM());
     }
+
     public void getFuel() {
-        FuelLevelCommand fuel = new FuelLevelCommand();
+//        FuelLevelCommand fuel = new FuelLevelCommand();
+//        try {
+//            fuel.run(mInStream, mOutStream);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return;
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//            return;
+//        }
+//        mStatResponseIntent.putExtra(FUEL_TAG, fuel.getFuelLevel());
+    }
+
+    public void getSpeed() {
+        SpeedCommand speed = new SpeedCommand();
         try {
-            fuel.run(mInStream, mOutStream);
+            speed.run(mInStream, mOutStream);
         } catch (IOException e) {
             e.printStackTrace();
+            return;
         } catch (InterruptedException e) {
             e.printStackTrace();
+            return;
         }
-        mIntent.putExtra("SERVER_RESPONSE", String.valueOf(fuel.getFuelLevel()));
-        mIntent.setAction("com.android.activity.SEND_DATA");
-        mContext.sendBroadcast(mIntent);
+        mStatResponseIntent.putExtra(SPEED_TAG, speed.getMetricSpeed());
     }
+
 
     private void write_raw(byte[] bytes) {
         String text = new String(bytes, Charset.defaultCharset());

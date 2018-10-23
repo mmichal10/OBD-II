@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,7 +21,7 @@ import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.example.michal.inz.BluetoothConnectionService;
+import com.example.michal.inz.bt_connection.BluetoothConnectionService;
 import com.example.michal.inz.DeviceListAdapter;
 import com.example.michal.inz.R;
 
@@ -49,17 +51,15 @@ public class SettingsFragment extends Fragment implements FragmentName, AdapterV
     private BluetoothAdapter mBluetoothAdapter;
 
     private BluetoothDevice mElmAdapterDevice;
-    private BluetoothConnectionService mBtConnectionService;
-
 
     public SettingsFragment() {
         // Required empty public constructor
     }
 
     @Override
-    public void onDestroy() {
+    public void onPause() {
         getActivity().unregisterReceiver(mBroadcastReceiver1);
-        super.onDestroy();
+        super.onPause();
     }
 
     @Override
@@ -91,7 +91,6 @@ public class SettingsFragment extends Fragment implements FragmentName, AdapterV
         mDevicesListView.setOnItemClickListener(SettingsFragment.this);
 
         // Connect
-        //mBtConnectionService = new BluetoothConnectionService(getContext());
         mConnectButton = view.findViewById(R.id.btn_connect);
         mConnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,13 +147,19 @@ public class SettingsFragment extends Fragment implements FragmentName, AdapterV
             intent.setClass(getContext(), BluetoothConnectionService.class);
             intent.putExtra("elmDevice", mElmAdapterDevice);
             intent.putExtra("UUID", myUUID);
+            intent.putExtra("receiver", new ResultReceiver(null){
+                @Override
+                protected void onReceiveResult(int resultCode, Bundle resultData) {
+                    Log.d(TAG, "received result");
+                    Log.d(TAG, resultData.getString("resultReceiverTag"));
+                }
+            });
             getActivity().startService(intent);
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());
             Toast.makeText(getContext(), "Socket inactive", Toast.LENGTH_LONG).show();
         }
     }
-
 
     private final BroadcastReceiver mBroadcastReceiver1 = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {

@@ -31,12 +31,6 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
         }
 
         return paramsFragment;
-       /*
-        Bundle bundle = new Bundle();
-        bundle.putString("message", "Fragment " + position);
-
-        paramsFragment.setArguments(bundle);
-        */
     }
 
     @Override
