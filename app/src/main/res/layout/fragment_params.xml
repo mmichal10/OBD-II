@@ -1,16 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.ParamsFragment">
+    tools:context=".fragments.SettingsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/txt_display"
-        android:text="If you see this text, sth went wrong"
-        />
+    <TableRow
+        android:stretchColumns="*"
+        android:layout_height="wrap_content">
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/tv_speed_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Speed"
+            android:layout_column="2"
+            android:layout_weight="1"
+            />
+
+        <TextView
+            android:id="@+id/tv_speed"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:layout_column="2"
+            android:layout_weight="1"
+            />
+
+    </TableRow>
+
+    <TableRow
+        android:stretchColumns="*"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_rpm_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="RPM"
+            android:layout_column="2"
+            android:layout_weight="1"
+            />
+
+        <TextView
+            android:id="@+id/tv_rpm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:layout_column="2"
+            android:layout_weight="1"
+            />
+
+    </TableRow>
+
+    <TableRow
+        android:stretchColumns="*"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_temperature_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Temperature"
+            android:layout_column="2"
+            android:layout_weight="1"
+            />
+
+        <TextView
+            android:id="@+id/tv_temperature"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:layout_column="2"
+            android:layout_weight="1"
+            />
+
+    </TableRow>
+
+    <TableRow
+        android:stretchColumns="*"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_l_km_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="l/km"
+            android:layout_column="2"
+            android:layout_weight="1"
+            />
+
+        <TextView
+            android:id="@+id/tv_l_km"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:layout_column="2"
+            android:layout_weight="1"
+            />
+
+    </TableRow>
+
+</TableLayout>
