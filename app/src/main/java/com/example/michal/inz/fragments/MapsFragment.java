@@ -1,6 +1,7 @@
 package com.example.michal.inz.fragments;
 
 
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.michal.inz.Location;
 import com.example.michal.inz.R;
 
 import org.mapsforge.core.model.LatLong;
@@ -33,6 +35,7 @@ public class MapsFragment extends Fragment implements FragmentName {
     private MapView mapView;
     public FragmentActivity activity;
     public View view;
+    Location myLocation = null;
 
 
 
@@ -45,6 +48,7 @@ public class MapsFragment extends Fragment implements FragmentName {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        myLocation = new Location(getContext(), this);
 
         AndroidGraphicFactory.createInstance(getActivity().getApplication());
         activity = getActivity();
@@ -58,8 +62,6 @@ public class MapsFragment extends Fragment implements FragmentName {
 
             File mapFile = new File(Environment.getExternalStorageDirectory(), MAP_FILE);
 
-
-
             MapDataStore mapDataStore = new MapFile(mapFile);
             TileCache tileCache = AndroidUtil.createTileCache(this.getActivity(), "fragments",
                     this.mapView.getModel().displayModel.getTileSize(), 1.0f, 1.5);
@@ -72,7 +74,8 @@ public class MapsFragment extends Fragment implements FragmentName {
             this.mapView.getLayerManager().getLayers().add(tileRendererLayer);
 
             mapView.setCenter(new LatLong(52.517037, 18.38886));
-            mapView.setZoomLevel((byte) 12);
+            mapView.setZoomLevel((byte) 18);
+            mapView.getTouchGestureHandler();
 
         }
         catch (Exception e){
@@ -82,10 +85,22 @@ public class MapsFragment extends Fragment implements FragmentName {
         return view;
     }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        mapView.setZoomLevel((byte) 18);
+        if(myLocation != null){
+            mapView.setCenter(new LatLong(myLocation.getLatitude(), myLocation.getLongitude()));
+        }
+    }
 
     @Override
     public String getName() {
         return "Maps";
+    }
+
+    public void updateLocation() {
+        mapView.setZoomLevel((byte) 18);
+        mapView.setCenter(new LatLong(myLocation.getLatitude(), myLocation.getLongitude()));
     }
 }
