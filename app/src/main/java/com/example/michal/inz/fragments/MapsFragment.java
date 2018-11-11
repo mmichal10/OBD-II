@@ -1,7 +1,5 @@
 package com.example.michal.inz.fragments;
 
-
-import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
@@ -24,6 +22,8 @@ import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 
 import java.io.File;
+
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 
 
 /**
