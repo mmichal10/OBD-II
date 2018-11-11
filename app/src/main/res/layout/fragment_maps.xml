@@ -5,10 +5,9 @@
     android:layout_height="match_parent"
     tools:context=".fragments.MapsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <org.mapsforge.map.android.view.MapView
+        android:id="@+id/openmapview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Adam, tutaj powinna byc mapa (y)" />
+        android:layout_height="match_parent" />
 
 </FrameLayout>
