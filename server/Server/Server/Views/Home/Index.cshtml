@@ -1,0 +1,43 @@
+﻿
+@model IEnumerable<CarRecord>;
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+    <label>Vins</label>
+    <select asp-items="@(new SelectList(@ViewBag.vins,"vin"))" onchange="">Vins</select>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.FuelUsage)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Voltage)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EngineSpeed)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Temperature)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FuelUsage)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Voltage)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EngineSpeed)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Temperature)
+            </td>
+        </tr>
+    }
+</table>
