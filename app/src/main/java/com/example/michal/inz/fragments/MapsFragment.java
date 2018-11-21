@@ -7,15 +7,16 @@ import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.example.michal.inz.Location;
+import com.example.michal.inz.MyMapView;
 import com.example.michal.inz.R;
 
 import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.util.AndroidUtil;
-import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.datastore.MapDataStore;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.overlay.Marker;
@@ -29,14 +30,13 @@ import java.io.File;
  */
 public class MapsFragment extends Fragment implements FragmentName {
 
-    private static final String MAP_FILE ="poland.map";
-    private static final String markerBMP ="myLocatinMarker.png";
-    private MapView mapView;
+    private static final String MAP_FILE = "poland.map";
+    private MyMapView mapView;
     public FragmentActivity activity;
     public View view;
     Location myLocation = null;
     Marker myLocationMarker;
-
+    Button yourLocationBtn;
 
 
     public MapsFragment() {
@@ -58,6 +58,18 @@ public class MapsFragment extends Fragment implements FragmentName {
         mapView.setClickable(true);
         mapView.getMapScaleBar().setVisible(true);
         mapView.setBuiltInZoomControls(true);
+        mapView.setParentFragment(this);
+
+        yourLocationBtn = view.findViewById(R.id.button);
+        yourLocationBtn.setVisibility(View.GONE);
+        yourLocationBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mapView.centerLock = false;
+                yourLocationBtn.setVisibility(View.GONE);
+                updateLocation();
+            }
+        });
         try {
 
             File mapFile = new File(Environment.getExternalStorageDirectory(), MAP_FILE);
@@ -78,10 +90,8 @@ public class MapsFragment extends Fragment implements FragmentName {
 
             mapView.setCenter(new LatLong(52.517037, 18.38886));
             mapView.setZoomLevel((byte) 18);
-            mapView.getTouchGestureHandler();
 
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -91,12 +101,17 @@ public class MapsFragment extends Fragment implements FragmentName {
     @Override
     public void onResume() {
         super.onResume();
-        mapView.setZoomLevel((byte) 18);
-        if(myLocation != null){
+        if (!mapView.centerLock) {
+            mapView.setZoomLevel((byte) 18);
             mapView.setCenter(new LatLong(myLocation.getLatitude(), myLocation.getLongitude()));
-            if (myLocationMarker != null)
-                myLocationMarker.setLatLong(new LatLong(myLocation.getLatitude(), myLocation.getLongitude()));
+        } else if (yourLocationBtn.getVisibility() == View.GONE){
+            yourLocationBtn.setVisibility(View.VISIBLE);
         }
+        if (myLocationMarker != null){
+            myLocationMarker.setLatLong(new LatLong(myLocation.getLatitude(), myLocation.getLongitude()));
+            myLocationMarker.setVisible(true);
+        }
+
     }
 
     @Override
@@ -105,9 +120,17 @@ public class MapsFragment extends Fragment implements FragmentName {
     }
 
     public void updateLocation() {
-        mapView.setZoomLevel((byte) 18);
-        mapView.setCenter(new LatLong(myLocation.getLatitude(), myLocation.getLongitude()));
-        if (myLocationMarker != null)
+        if (!mapView.centerLock) {
+            mapView.setZoomLevel((byte) 18);
+            mapView.setCenter(new LatLong(myLocation.getLatitude(), myLocation.getLongitude()));
+        }
+        else if (yourLocationBtn.getVisibility() == View.GONE){
+            yourLocationBtn.setVisibility(View.VISIBLE);
+        }
+        if (myLocationMarker != null){
             myLocationMarker.setLatLong(new LatLong(myLocation.getLatitude(), myLocation.getLongitude()));
+            myLocationMarker.setVisible(true);
+        }
     }
+
 }
