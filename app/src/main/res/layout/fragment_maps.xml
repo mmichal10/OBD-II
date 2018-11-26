@@ -5,10 +5,18 @@
     android:layout_height="match_parent"
     tools:context=".fragments.MapsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <com.example.michal.inz.MyMapView
+        android:id="@+id/openmapview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Adam, tutaj powinna byc mapa (y)" />
+        />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="148dp"
+        android:layout_height="38dp"
+        android:layout_gravity="top|center_horizontal"
+        android:background="@drawable/common_google_signin_btn_icon_dark_normal_background"
+        android:text="Your location" />
 
 </FrameLayout>

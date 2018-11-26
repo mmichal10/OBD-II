@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -63,6 +62,13 @@ public class SettingsFragment extends Fragment implements FragmentName, AdapterV
     }
 
     @Override
+    public void onResume(){
+        IntentFilter BTIntent = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        getActivity().registerReceiver(mBroadcastReceiver1, BTIntent);
+        super.onResume();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
@@ -103,20 +109,24 @@ public class SettingsFragment extends Fragment implements FragmentName, AdapterV
         return view;
     }
 
-    private void enableDisableBT(){
+    private void enableDisableBT() {
+
         Log.d(TAG, "onClick: enabling/disabling bluetooth.");
 
-        if(mBluetoothAdapter == null){
+        if (mBluetoothAdapter == null) {
             Log.d(TAG, "enableDisableBT: Does not have BT capabilities.");
             return;
         }
-
-        if(!mBluetoothAdapter.isEnabled()) {
-            Log.d(TAG, "enable BT");
-            mBluetoothAdapter.enable();
-        } else {
-            Log.d(TAG, "disable BT");
-            mBluetoothAdapter.disable();
+        try {
+            if (!mBluetoothAdapter.isEnabled()) {
+                Log.d(TAG, "enable BT");
+                mBluetoothAdapter.enable();
+            } else {
+                Log.d(TAG, "disable BT");
+                mBluetoothAdapter.disable();
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         }
 
         IntentFilter BTIntent = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
@@ -189,10 +199,14 @@ public class SettingsFragment extends Fragment implements FragmentName, AdapterV
     };
 
     private void updateBtSwitch() {
-        if (mBluetoothAdapter.isEnabled()) {
-            mBtOnOffSwitch.setChecked(true);
-        } else {
-            mBtOnOffSwitch.setChecked(false);
+        try {
+            if (mBluetoothAdapter.isEnabled()) {
+                mBtOnOffSwitch.setChecked(true);
+            } else {
+                mBtOnOffSwitch.setChecked(false);
+            }
+        } catch (NullPointerException e){
+            e.printStackTrace();
         }
     }
 

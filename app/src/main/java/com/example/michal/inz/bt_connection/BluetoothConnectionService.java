@@ -69,13 +69,6 @@ public class BluetoothConnectionService extends IntentService {
         mStatResponseIntent = new Intent();
         mStatResponseIntent.setAction(STATS_UPDATE_INTENT);
 
-        SystemClock.sleep(5000);
-        for (int i = 0; i < 10; i++) {
-            mStatResponseIntent.putExtra("resultReceiverTag", "test " + i);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(mStatResponseIntent);
-            Log.d(TAG, "message sent " + i);
-        }
-
         if (!establishConnection()) {
             cleanup();
             Log.d(TAG, "Preparing bluetooth connection failed");
