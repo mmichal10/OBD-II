@@ -20,9 +20,10 @@ import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.example.michal.inz.bt_connection.BluetoothConnectionService;
+import com.example.michal.inz.networking.BluetoothConnectionService;
 import com.example.michal.inz.DeviceListAdapter;
 import com.example.michal.inz.R;
+import com.example.michal.inz.networking.ServerConnectionService;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -101,7 +102,7 @@ public class SettingsFragment extends Fragment implements FragmentName, AdapterV
         mConnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                btConnect();
+                startNetworking();
             }
         });
 
@@ -144,31 +145,43 @@ public class SettingsFragment extends Fragment implements FragmentName, AdapterV
         mDevicesListView.setAdapter(mDeviceListAdapter);
     }
 
-    private void btConnect(){
+    private void startNetworking() {
+        try {
+            btConnect();
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+            Toast.makeText(getContext(), "Bluetooth socket inactive", Toast.LENGTH_LONG).show();
+        }
+
+        try {
+            serverConnect();
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+            Toast.makeText(getContext(), "Server connection inactive", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void btConnect() {
         if (mElmAdapterDevice == null) {
             Toast.makeText(getContext(), "You didn't choose a device!",Toast.LENGTH_LONG).show();
             return;
         }
 
-        Log.d(TAG, "Starting connection thread");
+        Log.d(TAG, "Starting bluetooth thread");
 
-        try {
-            Intent intent = new Intent();
-            intent.setClass(getContext(), BluetoothConnectionService.class);
-            intent.putExtra("elmDevice", mElmAdapterDevice);
-            intent.putExtra("UUID", myUUID);
-            intent.putExtra("receiver", new ResultReceiver(null){
-                @Override
-                protected void onReceiveResult(int resultCode, Bundle resultData) {
-                    Log.d(TAG, "received result");
-                    Log.d(TAG, resultData.getString("resultReceiverTag"));
-                }
-            });
-            getActivity().startService(intent);
-        } catch (Exception e) {
-            Log.d(TAG, e.getMessage());
-            Toast.makeText(getContext(), "Socket inactive", Toast.LENGTH_LONG).show();
-        }
+        Intent intent = new Intent();
+        intent.setClass(getContext(), BluetoothConnectionService.class);
+        intent.putExtra("elmDevice", mElmAdapterDevice);
+        intent.putExtra("UUID", myUUID);
+        getActivity().startService(intent);
+    }
+
+    private void serverConnect() {
+        Log.d(TAG, "Starting bluetooth thread");
+
+        Intent intent = new Intent();
+        intent.setClass(getContext(), ServerConnectionService.class);
+        getActivity().startService(intent);
     }
 
     private final BroadcastReceiver mBroadcastReceiver1 = new BroadcastReceiver() {

@@ -1,4 +1,4 @@
-package com.example.michal.inz.bt_connection;
+package com.example.michal.inz.networking;
 
 import android.app.IntentService;
 import android.bluetooth.BluetoothDevice;
@@ -13,7 +13,6 @@ import android.util.Log;
 
 import com.github.pires.obd.commands.SpeedCommand;
 import com.github.pires.obd.commands.engine.RPMCommand;
-import com.github.pires.obd.commands.fuel.FuelLevelCommand;
 import com.github.pires.obd.commands.temperature.EngineCoolantTemperatureCommand;
 
 import java.io.IOException;
@@ -47,8 +46,6 @@ public class BluetoothConnectionService extends IntentService {
 
     private long statsUpdateFrequency;
 
-    private ResultReceiver receiver;
-
     private Intent mStatResponseIntent;
 
 
@@ -64,7 +61,6 @@ public class BluetoothConnectionService extends IntentService {
         mContext = getApplicationContext();
         mmDevice = intent.getParcelableExtra("elmDevice");
         deviceUUID = UUID.fromString(intent.getStringExtra("UUID"));
-        receiver = intent.getParcelableExtra("receiver");
 
         mStatResponseIntent = new Intent();
         mStatResponseIntent.setAction(STATS_UPDATE_INTENT);
