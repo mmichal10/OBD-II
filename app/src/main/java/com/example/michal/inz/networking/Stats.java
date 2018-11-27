@@ -1,9 +1,5 @@
 package com.example.michal.inz.networking;
 
-
-import android.util.JsonToken;
-import android.util.JsonWriter;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,7 +46,7 @@ public class Stats {
             e.printStackTrace();
         }
 
-        return object.toString().replace("\\", "");
+        return object.toString();
     }
 
     public String getVin() {

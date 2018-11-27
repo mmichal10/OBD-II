@@ -12,7 +12,9 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.github.pires.obd.commands.SpeedCommand;
+import com.github.pires.obd.commands.control.ModuleVoltageCommand;
 import com.github.pires.obd.commands.engine.RPMCommand;
+import com.github.pires.obd.commands.fuel.FuelLevelCommand;
 import com.github.pires.obd.commands.temperature.EngineCoolantTemperatureCommand;
 
 import java.io.IOException;
@@ -101,6 +103,7 @@ public class BluetoothConnectionService extends IntentService {
         getFuel();
         getRpm();
         getSpeed();
+        getVoltage();
     }
 
     private boolean establishConnection() {
@@ -246,17 +249,17 @@ public class BluetoothConnectionService extends IntentService {
     }
 
     public void getFuel() {
-//        FuelLevelCommand fuel = new FuelLevelCommand();
-//        try {
-//            fuel.run(mInStream, mOutStream);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return;
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//            return;
-//        }
-//        mStatResponseIntent.putExtra(FUEL_TAG, fuel.getFuelLevel());
+        FuelLevelCommand fuel = new FuelLevelCommand();
+        try {
+            fuel.run(mInStream, mOutStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return;
+        }
+        mStatResponseIntent.putExtra(FUEL_TAG, fuel.getFuelLevel());
     }
 
     public void getSpeed() {
@@ -271,6 +274,20 @@ public class BluetoothConnectionService extends IntentService {
             return;
         }
         mStatResponseIntent.putExtra(SPEED_TAG, speed.getMetricSpeed());
+    }
+
+    public void getVoltage() {
+        ModuleVoltageCommand voltage = new ModuleVoltageCommand();
+        try {
+            voltage.run(mInStream, mOutStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return;
+        }
+        mStatResponseIntent.putExtra(SPEED_TAG, voltage.getVoltage());
     }
 
 
