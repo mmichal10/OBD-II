@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 
 import com.example.michal.inz.Location;
@@ -61,7 +62,7 @@ public class MapsFragment extends Fragment implements FragmentName {
     Marker myLocationMarker;
     Button yourLocationBtn;
     Button navigateBtn;
-    RadioButton myDot;
+    ImageButton myDot;
     GraphHopper graphHopper;
     GeoPoint start;
     GeoPoint end;
@@ -71,6 +72,8 @@ public class MapsFragment extends Fragment implements FragmentName {
     File myFolder;
     PathLayer myRoute;
     private boolean choosingLocationSecond = false;
+    Marker endMarker = null;
+    Polyline line = null;
 
     public MapsFragment() {
         // Required empty public constructor
@@ -115,7 +118,7 @@ public class MapsFragment extends Fragment implements FragmentName {
                     mapView.getModel().mapViewPosition, AndroidGraphicFactory.INSTANCE);
             tileRendererLayer.setXmlRenderTheme(new ExternalRenderTheme(new File(myFolder, "theme.xml")));
 
-            myLocationMarker = new Marker(new LatLong(52.517037, 18.38886), markerImg, 1, 1);
+            myLocationMarker = new Marker(new LatLong(52.517037, 18.38886), markerImg, 0, 0);
             this.mapView.getLayerManager().getLayers().add(tileRendererLayer);
             this.mapView.getLayerManager().getLayers().add(myLocationMarker);
 
@@ -180,16 +183,36 @@ public class MapsFragment extends Fragment implements FragmentName {
             @Override
             public void onClick(View view) {
                 if (prepareFinished) {
-                    if (!choosingLocation) {
+                    if (!choosingLocation && !choosedLocation) {
                         chosePointOnMap();
-                    }else if (choosingLocation) {
+                    } else if (!choosingLocation && choosedLocation) {
+                        removeRoute();
+                        choosedLocation = false;
+                        navigateBtn.setText("Nawiguj");
+                    }
+                    else if (choosingLocation) {
                         choosePoint();
                         choosingLocation = false;
+                        addEndMarker(end);
+                        navigateBtn.setText("Wyznaczanie");
                         createPath(start, end);
+                        choosedLocation = true;
                     }
                 }
             }
         });
+    }
+
+    private void removeRoute() {
+        mapView.getLayerManager().getLayers().remove(endMarker);
+        mapView.getLayerManager().getLayers().remove(line);
+    }
+
+    private void addEndMarker(GeoPoint end) {
+        Bitmap markerImg = null;
+        markerImg = AndroidGraphicFactory.convertToBitmap(getResources().getDrawable(R.drawable.location_icon_end));
+        endMarker = new Marker(new LatLong(end.getLatitude(), end.getLongitude()), markerImg, 0, 0);
+        mapView.getLayerManager().getLayers().add(endMarker);
     }
 
     private void createPath(final GeoPoint start, final GeoPoint end) {
@@ -212,8 +235,8 @@ public class MapsFragment extends Fragment implements FragmentName {
             protected void onPostExecute(PathWrapper ghResponse) {
                 if (!ghResponse.hasErrors()) {
                     drawPath(ghResponse);
+                    navigateBtn.setText("Nowa trasa");
                 }
-                //shortestPathRunning = false;
             }
         }.execute();
 
@@ -230,7 +253,7 @@ public class MapsFragment extends Fragment implements FragmentName {
         paintStroke.setColor(Color.GREEN);
         paintStroke.setStrokeWidth(7);
 
-        Polyline line = new Polyline(paintStroke,
+        line = new Polyline(paintStroke,
                 AndroidGraphicFactory.INSTANCE);
 
         List<LatLong> geoPoints = line.getLatLongs();
@@ -247,7 +270,7 @@ public class MapsFragment extends Fragment implements FragmentName {
                 mapView.getModel().mapViewPosition.getMapPosition().latLong.longitude);
         end = p;
         start = new GeoPoint(myLocation.getLatitude(), myLocation.getLongitude());
-        navigateBtn.setVisibility(View.GONE);
+        myDot.setVisibility(View.GONE);
     }
 
     private void chosePointOnMap() {
