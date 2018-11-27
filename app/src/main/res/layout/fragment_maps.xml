@@ -19,4 +19,19 @@
         android:background="@drawable/common_google_signin_btn_icon_dark_normal_background"
         android:text="Your location" />
 
+    <Button
+        android:id="@+id/buttonNavigate"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:background="@drawable/common_google_signin_btn_icon_dark_normal_background"
+        android:text="Nawiguj" />
+
+    <RadioButton
+        android:id="@+id/radioButton"
+        android:layout_width="5dp"
+        android:layout_height="5dp"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:foreground="@color/colorPrimaryDark"/>
+
 </FrameLayout>

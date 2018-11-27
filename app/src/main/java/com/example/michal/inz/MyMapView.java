@@ -1,12 +1,9 @@
 package com.example.michal.inz;
 
 import android.content.Context;
-import android.support.v4.app.FragmentActivity;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-
 import com.example.michal.inz.fragments.MapsFragment;
-
 import org.mapsforge.map.android.view.MapView;
 
 public class MyMapView extends MapView {
@@ -28,11 +25,12 @@ public class MyMapView extends MapView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_MOVE){
+        if (event.getAction() == MotionEvent.ACTION_MOVE) {
             centerLock = true;
             parentFragment.updateLocation();
+            //  this.myMap = new AndroidMap(this);
         }
-
         return super.onTouchEvent(event);
     }
 }
+
