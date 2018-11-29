@@ -34,6 +34,7 @@ public class BluetoothConnectionService extends IntentService {
     public static final String RPM_TAG = "RPM";
     public static final String FUEL_TAG = "FUEL";
     public static final String SPEED_TAG = "SPEED";
+    public static final String VOLTAGE_TAG = "VOLTAGE";
 
     public final String TAG = "connectionService";
 
@@ -272,7 +273,7 @@ public class BluetoothConnectionService extends IntentService {
             Log.d(TAG, "Failed to read voltage");
             return;
         }
-        mStatResponseIntent.putExtra(SPEED_TAG, voltage.getVoltage());
+        mStatResponseIntent.putExtra(VOLTAGE_TAG, voltage.getVoltage());
     }
 
 

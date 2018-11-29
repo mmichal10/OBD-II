@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +24,7 @@ import android.widget.Toast;
 import com.example.michal.inz.networking.BluetoothConnectionService;
 import com.example.michal.inz.DeviceListAdapter;
 import com.example.michal.inz.R;
-import com.example.michal.inz.networking.ServerConnectionService;
+import com.example.michal.inz.networking.ServerConnection;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -177,11 +178,11 @@ public class SettingsFragment extends Fragment implements FragmentName, AdapterV
     }
 
     private void serverConnect() {
-        Log.d(TAG, "Starting bluetooth thread");
+        Log.d(TAG, "Register ServerConnection receiver");
 
-        Intent intent = new Intent();
-        intent.setClass(getContext(), ServerConnectionService.class);
-        getActivity().startService(intent);
+        ServerConnection serverConnection = new ServerConnection();
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(serverConnection,
+                new IntentFilter(BluetoothConnectionService.STATS_UPDATE_INTENT));
     }
 
     private final BroadcastReceiver mBroadcastReceiver1 = new BroadcastReceiver() {

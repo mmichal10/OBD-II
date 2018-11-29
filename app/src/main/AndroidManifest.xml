@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <service android:name=".networking.BluetoothConnectionService" android:enabled="true"/>
-        <service android:name=".networking.ServerConnectionService" android:enabled="true"/>
+        <receiver android:name=".networking.ServerConnection" android:enabled="true"/>
     </application>
 
 </manifest>
