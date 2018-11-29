@@ -223,11 +223,8 @@ public class BluetoothConnectionService extends IntentService {
         EngineCoolantTemperatureCommand temp = new EngineCoolantTemperatureCommand();
         try {
             temp.run(mInStream, mOutStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Log.d(TAG, "Failed to read temperature");
             return;
         }
 
@@ -238,11 +235,8 @@ public class BluetoothConnectionService extends IntentService {
         RPMCommand rpm = new RPMCommand();
         try {
             rpm.run(mInStream, mOutStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Log.d(TAG, "Failed to read rpm");
             return;
         }
         mStatResponseIntent.putExtra(RPM_TAG, rpm.getRPM());
@@ -252,11 +246,8 @@ public class BluetoothConnectionService extends IntentService {
         FuelLevelCommand fuel = new FuelLevelCommand();
         try {
             fuel.run(mInStream, mOutStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Log.d(TAG, "Failed to read fuel");
             return;
         }
         mStatResponseIntent.putExtra(FUEL_TAG, fuel.getFuelLevel());
@@ -266,11 +257,8 @@ public class BluetoothConnectionService extends IntentService {
         SpeedCommand speed = new SpeedCommand();
         try {
             speed.run(mInStream, mOutStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Log.d(TAG, "Failed to read speed");
             return;
         }
         mStatResponseIntent.putExtra(SPEED_TAG, speed.getMetricSpeed());
@@ -280,11 +268,8 @@ public class BluetoothConnectionService extends IntentService {
         ModuleVoltageCommand voltage = new ModuleVoltageCommand();
         try {
             voltage.run(mInStream, mOutStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Log.d(TAG, "Failed to read voltage");
             return;
         }
         mStatResponseIntent.putExtra(SPEED_TAG, voltage.getVoltage());
