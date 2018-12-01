@@ -11,11 +11,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.github.pires.obd.commands.SpeedCommand;
-import com.github.pires.obd.commands.engine.RPMCommand;
-import com.github.pires.obd.commands.fuel.FuelLevelCommand;
-import com.github.pires.obd.commands.temperature.EngineCoolantTemperatureCommand;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,6 +18,9 @@ import java.lang.reflect.Method;
 import java.net.ConnectException;
 import java.nio.charset.Charset;
 import java.util.UUID;
+
+import com.example.michal.inz.OBDConnection.*;
+
 
 public class BluetoothConnectionService extends IntentService {
 
@@ -250,17 +248,17 @@ public class BluetoothConnectionService extends IntentService {
     }
 
     public void getFuel() {
-//        FuelLevelCommand fuel = new FuelLevelCommand();
-//        try {
-//            fuel.run(mInStream, mOutStream);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return;
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//            return;
-//        }
-//        mStatResponseIntent.putExtra(FUEL_TAG, fuel.getFuelLevel());
+        FuelLevelCommand fuel = new FuelLevelCommand();
+        try {
+            fuel.run(mInStream, mOutStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return;
+        }
+        mStatResponseIntent.putExtra(FUEL_TAG, fuel.getFuelLevel());
     }
 
     public void getSpeed() {
@@ -276,7 +274,6 @@ public class BluetoothConnectionService extends IntentService {
         }
         mStatResponseIntent.putExtra(SPEED_TAG, speed.getMetricSpeed());
     }
-
 
     private void write_raw(byte[] bytes) {
         String text = new String(bytes, Charset.defaultCharset());
