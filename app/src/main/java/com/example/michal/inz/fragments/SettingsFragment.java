@@ -8,9 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,9 +21,10 @@ import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.example.michal.inz.bt_connection.BluetoothConnectionService;
+import com.example.michal.inz.networking.BluetoothConnectionService;
 import com.example.michal.inz.DeviceListAdapter;
 import com.example.michal.inz.R;
+import com.example.michal.inz.networking.ServerConnection;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -63,6 +64,13 @@ public class SettingsFragment extends Fragment implements FragmentName, AdapterV
     }
 
     @Override
+    public void onResume(){
+        IntentFilter BTIntent = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        getActivity().registerReceiver(mBroadcastReceiver1, BTIntent);
+        super.onResume();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
@@ -95,7 +103,7 @@ public class SettingsFragment extends Fragment implements FragmentName, AdapterV
         mConnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                btConnect();
+                startNetworking();
             }
         });
 
@@ -103,20 +111,24 @@ public class SettingsFragment extends Fragment implements FragmentName, AdapterV
         return view;
     }
 
-    private void enableDisableBT(){
+    private void enableDisableBT() {
+
         Log.d(TAG, "onClick: enabling/disabling bluetooth.");
 
-        if(mBluetoothAdapter == null){
+        if (mBluetoothAdapter == null) {
             Log.d(TAG, "enableDisableBT: Does not have BT capabilities.");
             return;
         }
-
-        if(!mBluetoothAdapter.isEnabled()) {
-            Log.d(TAG, "enable BT");
-            mBluetoothAdapter.enable();
-        } else {
-            Log.d(TAG, "disable BT");
-            mBluetoothAdapter.disable();
+        try {
+            if (!mBluetoothAdapter.isEnabled()) {
+                Log.d(TAG, "enable BT");
+                mBluetoothAdapter.enable();
+            } else {
+                Log.d(TAG, "disable BT");
+                mBluetoothAdapter.disable();
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         }
 
         IntentFilter BTIntent = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
@@ -134,31 +146,43 @@ public class SettingsFragment extends Fragment implements FragmentName, AdapterV
         mDevicesListView.setAdapter(mDeviceListAdapter);
     }
 
-    private void btConnect(){
+    private void startNetworking() {
+        try {
+            btConnect();
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+            Toast.makeText(getContext(), "Bluetooth socket inactive", Toast.LENGTH_LONG).show();
+        }
+
+        try {
+            serverConnect();
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+            Toast.makeText(getContext(), "Server connection inactive", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void btConnect() {
         if (mElmAdapterDevice == null) {
             Toast.makeText(getContext(), "You didn't choose a device!",Toast.LENGTH_LONG).show();
             return;
         }
 
-        Log.d(TAG, "Starting connection thread");
+        Log.d(TAG, "Starting bluetooth thread");
 
-        try {
-            Intent intent = new Intent();
-            intent.setClass(getContext(), BluetoothConnectionService.class);
-            intent.putExtra("elmDevice", mElmAdapterDevice);
-            intent.putExtra("UUID", myUUID);
-            intent.putExtra("receiver", new ResultReceiver(null){
-                @Override
-                protected void onReceiveResult(int resultCode, Bundle resultData) {
-                    Log.d(TAG, "received result");
-                    Log.d(TAG, resultData.getString("resultReceiverTag"));
-                }
-            });
-            getActivity().startService(intent);
-        } catch (Exception e) {
-            Log.d(TAG, e.getMessage());
-            Toast.makeText(getContext(), "Socket inactive", Toast.LENGTH_LONG).show();
-        }
+        Intent intent = new Intent();
+        intent.setClass(getContext(), BluetoothConnectionService.class);
+        intent.putExtra("elmDevice", mElmAdapterDevice);
+        intent.putExtra("UUID", myUUID);
+        getActivity().startService(intent);
+    }
+
+    private void serverConnect() {
+        Log.d(TAG, "Register ServerConnection receiver");
+
+        ServerConnection serverConnection = new ServerConnection();
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(serverConnection,
+                new IntentFilter(BluetoothConnectionService.STATS_UPDATE_INTENT));
     }
 
     private final BroadcastReceiver mBroadcastReceiver1 = new BroadcastReceiver() {
@@ -189,10 +213,14 @@ public class SettingsFragment extends Fragment implements FragmentName, AdapterV
     };
 
     private void updateBtSwitch() {
-        if (mBluetoothAdapter.isEnabled()) {
-            mBtOnOffSwitch.setChecked(true);
-        } else {
-            mBtOnOffSwitch.setChecked(false);
+        try {
+            if (mBluetoothAdapter.isEnabled()) {
+                mBtOnOffSwitch.setChecked(true);
+            } else {
+                mBtOnOffSwitch.setChecked(false);
+            }
+        } catch (NullPointerException e){
+            e.printStackTrace();
         }
     }
 
