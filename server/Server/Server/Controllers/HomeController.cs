@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Server.Models;
 using Server.Data;
+using Newtonsoft.Json;
 
 namespace Server.Controllers
 {
@@ -19,7 +20,7 @@ namespace Server.Controllers
         public IActionResult Index()
         {
             if (_context.CarRecords.Count() > 0) { 
-            @ViewBag.vins = _context.CarRecords.Select(x => x.Vin).ToList();
+            @ViewBag.vins = _context.CarRecords.Select(x => x.Vin).Distinct().ToList();
             }
             else
             {
@@ -55,12 +56,12 @@ namespace Server.Controllers
             return Json(carRecord);
         }
             
-        [HttpGet("{vin}")]
-        public IActionResult Index(string vin)
+
+        public IActionResult GetVinRecords(string vin)
         {
-            var vinRecords = _context.CarRecords.Where(x => x.Vin==vin);
-            ViewBag.vinRecords = vinRecords;
-            return View(vinRecords); 
+            var vinRecords = _context.CarRecords.Where(x => x.Vin==vin).ToList();
+            string json = JsonConvert.SerializeObject(vinRecords);
+            return  Ok(json);
         }
 
     }

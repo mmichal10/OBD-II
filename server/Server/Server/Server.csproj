@@ -3,7 +3,16 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <UserSecretsId>aspnet-Server-09547129-3E03-4416-9921-B26B632E1BA5</UserSecretsId>
+    <ApplicationIcon />
+    <OutputType>WinExe</OutputType>
+    <StartupObject />
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Properties\PublishProfiles\inzserv - Web Deploy.pubxml" />
+    <None Remove="Properties\PublishProfiles\inzserve - Web Deploy.pubxml" />
+    <None Remove="Properties\PublishProfiles\Server20181121094058 - Web Deploy.pubxml" />
+  </ItemGroup>
 
 
   <ItemGroup>
@@ -20,6 +29,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
 
 </Project>
