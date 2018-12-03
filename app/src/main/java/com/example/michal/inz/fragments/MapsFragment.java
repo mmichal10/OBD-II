@@ -241,7 +241,6 @@ public class MapsFragment extends Fragment implements FragmentName {
             }
         }.execute();
 
-
     }
 
     private void drawPath(PathWrapper ghResponse) {
@@ -293,7 +292,6 @@ public class MapsFragment extends Fragment implements FragmentName {
 
     public void updateLocation() {
         if (!mapView.centerLock) {
-            mapView.setZoomLevel((byte) 18);
             mapView.setCenter(new LatLong(myLocation.getLatitude(), myLocation.getLongitude()));
         }
         else if (yourLocationBtn.getVisibility() == View.GONE){
