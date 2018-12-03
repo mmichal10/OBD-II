@@ -17,7 +17,7 @@ import java.io.UnsupportedEncodingException;
 
 public class ServerConnection extends BroadcastReceiver {
     private static final String TAG = "ServerConnection";
-    private static final String ADDRESS = "http://inzservv.azurewebsites.net/home/archive";
+    private static final String ADDRESS = "http://engiserv.azurewebsites.net/home/archive";
 
     private float temperature = -1, speed = -1, fuelLevel = -1;
     private double voltage = -1;
