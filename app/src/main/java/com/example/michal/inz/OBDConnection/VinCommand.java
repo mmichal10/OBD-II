@@ -15,7 +15,7 @@ public class VinCommand extends PersistentCommand {
     }
 
     @Override
-    protected void performCalculations() {
+    protected void calculate() {
         final String result = getResult();
         String workingData;
         if (result.contains(":")) {//CAN(ISO-15765) protocol.
@@ -34,7 +34,7 @@ public class VinCommand extends PersistentCommand {
     }
 
     @Override
-    protected void fillBuffer() {
+    protected void decodeRawData() {
     }
 
     public String convertHexToString(String hex) {

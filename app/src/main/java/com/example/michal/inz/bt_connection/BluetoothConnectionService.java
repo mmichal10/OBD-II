@@ -10,6 +10,7 @@ import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +20,7 @@ import java.net.ConnectException;
 import java.nio.charset.Charset;
 import java.util.UUID;
 
+import com.example.michal.inz.MainActivity;
 import com.example.michal.inz.OBDConnection.*;
 
 
@@ -73,11 +75,43 @@ public class BluetoothConnectionService extends IntentService {
             return;
         }
 
+
+
         Log.d(TAG, "Successfully prepared bluetooth connection service");
+        Toast.makeText(getApplicationContext(), "Connected to OBD-II", Toast.LENGTH_LONG).show();
+
+        //resetOBD();
+        //selectProtocol();
 
         mStatResponseIntent = new Intent();
 
         getStatistics();
+    }
+
+    private void resetOBD() {
+        ResetCommand temp = new ResetCommand();
+        try {
+            temp.run(mInStream, mOutStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    public void selectProtocol() {
+        SelectProtocolCommand temp = new SelectProtocolCommand("0");
+        try {
+            temp.run(mInStream, mOutStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return;
+        }
     }
 
     private void getStatistics() {

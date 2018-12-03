@@ -12,7 +12,7 @@ public class SpeedCommand extends OBDCommand {
     }
 
     @Override
-    protected void performCalculations() {
+    protected void calculate() {
         // Ignore first two bytes [hh hh] of the response.
         metricSpeed = buffer.get(2);
     }

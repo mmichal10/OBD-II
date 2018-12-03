@@ -22,7 +22,6 @@ public abstract class OBDCommand {
     protected ArrayList<Integer> buffer = null;
     protected String cmd = null;
     protected String rawData = null;
-    protected Long responseDelayInMs = null;
     private long start;
     private long end;
 
@@ -48,36 +47,31 @@ public abstract class OBDCommand {
         }
     }
 
-    protected void sendCommand(OutputStream out) throws IOException, InterruptedException {
+    protected void sendCommand(OutputStream out) throws IOException {
         // write to OutputStream (i.e.: a BluetoothSocket) with an added
         // Carriage return
-        out.write((cmd + "\r").getBytes());
+        out.write((cmd.concat("\r")).getBytes());
         out.flush();
-        if (responseDelayInMs != null && responseDelayInMs > 0) {
-            Thread.sleep(responseDelayInMs);
-        }
     }
 
-    protected void resendCommand(OutputStream out) throws IOException, InterruptedException {
+    protected void resendCommand(OutputStream out) throws IOException {
         out.write("\r".getBytes());
         out.flush();
-        if (responseDelayInMs != null && responseDelayInMs > 0) {
-            Thread.sleep(responseDelayInMs);
-        }
     }
 
     protected void readResult(InputStream in) throws IOException {
         readRawData(in);
         checkForErrors();
-        fillBuffer();
-        performCalculations();
+        decodeRawData();
+        calculate();
     }
 
-    protected abstract void performCalculations();
+    protected abstract void calculate();
 
-    protected void fillBuffer() {
+    protected void decodeRawData() {
         rawData = rawData.replaceAll("\\s", ""); //removes all [ \t\n\x0B\f\r]
-        rawData = rawData.replaceAll("(BUS INIT)|(BUSINIT)|(\\.)", "");
+        rawData = rawData.replaceAll("\\.", "");
+        rawData = rawData.replaceAll("BUSINIT", "");
 
         if (!rawData.matches("([0-9A-F])+")) {
             throw new NonNumericResponseException(rawData);
@@ -85,8 +79,7 @@ public abstract class OBDCommand {
 
         // read string each two chars
         buffer.clear();
-        int begin = 0;
-        int end = 2;
+        int begin = 0, end = 2;
         while (end <= rawData.length()) {
             buffer.add(Integer.decode("0x" + rawData.substring(begin, end)));
             begin = end;
@@ -95,37 +88,23 @@ public abstract class OBDCommand {
     }
 
     protected void readRawData(InputStream in) throws IOException {
-        byte b = 0;
-        StringBuilder res = new StringBuilder();
+        StringBuilder response = new StringBuilder();
+        byte singleByte = 0;
+        char c;
 
         // read until '>' arrives OR end of stream reached
-        char c;
         // -1 if the end of the stream is reached
-        while (((b = (byte) in.read()) > -1)) {
-            c = (char) b;
+        while (((singleByte = (byte)in.read()) != -1)) {
+            c = (char) singleByte;
             if (c == '>') // read until '>' arrives
-            {
                 break;
-            }
-            res.append(c);
+
+            response.append(c);
         }
 
-        /*
-         * Imagine the following response 41 0c 00 0d.
-         *
-         * ELM sends strings!! So, ELM puts spaces between each "byte". And pay
-         * attention to the fact that I've put the word byte in quotes, because 41
-         * is actually TWO bytes (two chars) in the socket. So, we must do some more
-         * processing..
-         */
-        rawData = res.toString().replaceAll("SEARCHING", "");
-
-        /*
-         * Data may have echo or informative text like "INIT BUS..." or similar.
-         * The response ends with two carriage return characters. So we need to take
-         * everything from the last carriage return before those two (trimmed above).
-         */
+        rawData = response.toString().replaceAll("SEARCHING", "");
         rawData = rawData.replaceAll("\\s", "");//removes all [ \t\n\x0B\f\r]
+        rawData = rawData.replaceAll("CANInitial-FAIL", "");
     }
 
     void checkForErrors() {
@@ -157,14 +136,6 @@ public abstract class OBDCommand {
 
     public abstract String getName();
 
-    public Long getResponseTimeDelay() {
-        return responseDelayInMs;
-    }
-
-    public void setResponseTimeDelay(Long responseDelayInMs) {
-        this.responseDelayInMs = responseDelayInMs;
-    }
-
     public long getStart() {
         return this.start;
     }
@@ -179,10 +150,6 @@ public abstract class OBDCommand {
 
     public void setEnd(long end) {
         this.end = end;
-    }
-
-    public final String getCommandPID() {
-        return cmd.substring(3);
     }
 
     @Override

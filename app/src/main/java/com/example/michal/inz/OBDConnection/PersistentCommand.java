@@ -43,7 +43,7 @@ public abstract class PersistentCommand extends OBDCommand {
         if (knownValues.containsKey(key)) {
             rawData = knownValues.get(key);
             buffer = knownBuffers.get(key);
-            performCalculations();
+            calculate();
         } else {
             super.run(in, out);
         }

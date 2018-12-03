@@ -12,7 +12,7 @@ public class RPMCommand extends OBDCommand {
     }
 
     @Override
-    protected void performCalculations() {
+    protected void calculate() {
         // ignore first two bytes [41 0C] of the response((A*256)+B)/4
         rpm = (buffer.get(2) * 256 + buffer.get(3)) / 4;
     }
