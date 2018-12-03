@@ -101,4 +101,28 @@
 
     </TableRow>
 
+    <TableRow
+        android:stretchColumns="*"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_vin_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="vin"
+            android:layout_column="2"
+            android:layout_weight="1"
+            />
+
+        <TextView
+            android:id="@+id/tv_vin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:layout_column="2"
+            android:layout_weight="1"
+            />
+
+    </TableRow>
+
 </TableLayout>

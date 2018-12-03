@@ -5,18 +5,11 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
-import android.os.ResultReceiver;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
-//import com.github.pires.obd.commands.SpeedCommand;
-//import com.github.pires.obd.commands.control.ModuleVoltageCommand;
-//import com.github.pires.obd.commands.engine.RPMCommand;
-//import com.github.pires.obd.commands.fuel.FuelLevelCommand;
-//import com.github.pires.obd.commands.temperature.EngineCoolantTemperatureCommand;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,7 +18,6 @@ import java.net.ConnectException;
 import java.nio.charset.Charset;
 import java.util.UUID;
 
-import com.example.michal.inz.MainActivity;
 import com.example.michal.inz.OBDConnection.*;
 
 
@@ -39,6 +31,8 @@ public class BluetoothConnectionService extends IntentService {
     public static final String FUEL_TAG = "FUEL";
     public static final String SPEED_TAG = "SPEED";
     public static final String VOLTAGE_TAG = "VOLTAGE";
+    public static final String VIN_TAG = "VIN";
+    public static final String FUEL_USAGE_TAG = "FUEL_USAGE";
 
     public final String TAG = "connectionService";
 
@@ -79,12 +73,8 @@ public class BluetoothConnectionService extends IntentService {
         }
 
 
-
         Log.d(TAG, "Successfully prepared bluetooth connection service");
         Toast.makeText(getApplicationContext(), "Connected to OBD-II", Toast.LENGTH_LONG).show();
-
-        //resetOBD();
-        //selectProtocol();
 
         mStatResponseIntent = new Intent();
 
@@ -136,6 +126,7 @@ public class BluetoothConnectionService extends IntentService {
     }
 
     private void updateStats() {
+        getVin();
         getTemperature();
         getFuel();
         getRpm();
@@ -256,7 +247,26 @@ public class BluetoothConnectionService extends IntentService {
         super.onDestroy();
     }
 
-    public void getTemperature() {
+    private void getVin() {
+        VinCommand temp = new VinCommand();
+
+        try {
+            temp.run(mInStream, mOutStream);
+        } catch (Exception e) {
+            Log.d(TAG, "Failed to read VIN");
+            return;
+        }
+
+        mStatResponseIntent.putExtra(VIN_TAG, temp.getVin());
+    }
+
+    private void getFuelUsage() {
+        throw new UnsupportedOperationException();
+
+        //mStatResponseIntent.putExtra(FUEL_USAGE_TAG, temp.getVin());
+    }
+
+    private void getTemperature() {
         EngineCoolantTemperatureCommand temp = new EngineCoolantTemperatureCommand();
         try {
             temp.run(mInStream, mOutStream);
@@ -268,7 +278,7 @@ public class BluetoothConnectionService extends IntentService {
         mStatResponseIntent.putExtra(TEMPERATURE_TAG, temp.getTemperature());
     }
 
-    public void getRpm() {
+    private void getRpm() {
         RPMCommand rpm = new RPMCommand();
         try {
             rpm.run(mInStream, mOutStream);
@@ -279,7 +289,7 @@ public class BluetoothConnectionService extends IntentService {
         mStatResponseIntent.putExtra(RPM_TAG, rpm.getRPM());
     }
 
-    public void getFuel() {
+    private void getFuel() {
         FuelLevelCommand fuel = new FuelLevelCommand();
         try {
             fuel.run(mInStream, mOutStream);
@@ -290,7 +300,7 @@ public class BluetoothConnectionService extends IntentService {
         mStatResponseIntent.putExtra(FUEL_TAG, fuel.getFuelLevel());
     }
 
-    public void getSpeed() {
+    private void getSpeed() {
         SpeedCommand speed = new SpeedCommand();
         try {
             speed.run(mInStream, mOutStream);
@@ -301,7 +311,7 @@ public class BluetoothConnectionService extends IntentService {
         mStatResponseIntent.putExtra(SPEED_TAG, speed.getMetricSpeed());
     }
 
-    public void getVoltage() {
+    private void getVoltage() {
         ModuleVoltageCommand voltage = new ModuleVoltageCommand();
         try {
             voltage.run(mInStream, mOutStream);

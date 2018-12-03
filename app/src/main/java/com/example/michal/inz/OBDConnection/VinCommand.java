@@ -51,4 +51,8 @@ public class VinCommand extends PersistentCommand {
         }
         return sb.toString();
     }
+
+    public String getVin() {
+        return this.vin;
+    }
 }

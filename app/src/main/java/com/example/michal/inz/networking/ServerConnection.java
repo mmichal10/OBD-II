@@ -22,6 +22,7 @@ public class ServerConnection extends BroadcastReceiver {
     private float temperature = -1, speed = -1, fuelLevel = -1;
     private double voltage = -1;
     private int rpm = -1;
+    private String vin;
 
     RequestQueue requestQueue;
 
@@ -54,7 +55,7 @@ public class ServerConnection extends BroadcastReceiver {
 
                 @Override
                 public byte[] getBody(){
-                    Stats stat = new Stats("SDhe", temperature, speed, (float) voltage, fuelLevel, rpm);
+                    Stats stat = new Stats(vin, temperature, speed, (float) voltage, fuelLevel, rpm);
                     try {
                         String s =  stat.toJson();
                         Log.d(TAG, s);
@@ -72,6 +73,13 @@ public class ServerConnection extends BroadcastReceiver {
     }
 
     private void getStats(Intent intent) {
+        try {
+            vin = intent.getStringExtra(BluetoothConnectionService.VIN_TAG);
+        } catch (Exception e) {
+            vin = "NULL";
+            Log.d(TAG, "Failed retrieve vin from car");
+        }
+
         try {
             temperature = intent.getFloatExtra(BluetoothConnectionService.TEMPERATURE_TAG, 0);
         } catch (Exception e) {
