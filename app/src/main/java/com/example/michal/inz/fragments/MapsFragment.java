@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -106,7 +107,7 @@ public class MapsFragment extends Fragment implements FragmentName {
                 myFolder.mkdirs();
 
             File mapFile = new File(myFolder, area +"-gh/" +  area + ".map");
-            mapFile.exists();
+            Log.d("map_fragment", String.valueOf(mapFile.exists()));
             Bitmap markerImg = null;
             markerImg = AndroidGraphicFactory.convertToBitmap(getResources().getDrawable(R.drawable.location_icon));
 
