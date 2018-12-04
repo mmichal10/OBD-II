@@ -19,8 +19,7 @@ public class ResetCommand extends OBDCommand {
     }
 
     public void decodeRawData() {
-        // settings commands don't return a value appropriate to place into the
-        // buffer, so do nothing
+        // settings commands don't return a value appropriate to place into the buffer, so do nothing
     }
 
 }

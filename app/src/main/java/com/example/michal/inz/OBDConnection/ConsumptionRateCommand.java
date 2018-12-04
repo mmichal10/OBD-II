@@ -14,7 +14,7 @@ public class ConsumptionRateCommand extends OBDCommand {
     @Override
     protected void calculate() {
         // ignore first two bytes [hh hh] of the response
-        fuelConsumption = (buffer.get(2) * 256 + buffer.get(3)) * 0.05f;
+        fuelConsumption = (buffer.get(2) * 256 + buffer.get(3)) / 20;
     }
 
     public float getLitersPerHour() {

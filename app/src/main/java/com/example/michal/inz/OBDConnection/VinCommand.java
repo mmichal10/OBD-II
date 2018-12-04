@@ -3,7 +3,7 @@ package com.example.michal.inz.OBDConnection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class VinCommand extends PersistentCommand {
+public class VinCommand extends OBDCommand {
     private String vin = "";
 
     public VinCommand() {
@@ -30,7 +30,7 @@ public class VinCommand extends PersistentCommand {
 
     @Override
     public String getName() {
-        return "Vehicle Identification Number (VIN)";
+        return "Vehicle Identification Number";
     }
 
     @Override
