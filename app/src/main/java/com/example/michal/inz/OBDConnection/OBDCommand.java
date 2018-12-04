@@ -9,22 +9,17 @@ import com.example.michal.inz.OBDConnection.Exceptions.*;
 
 
 public abstract class OBDCommand {
-
-    private final Class[] ERROR_CLASSES = {
+    protected ArrayList<Integer> buffer = null;
+    protected String cmd = null;
+    protected String rawData = null;
+    private final Class[] NOTICED_ERRORS = {
             UnableToConnectException.class,
             BusInitException.class,
             MisunderstoodCommandException.class,
             NoDataException.class,
             StoppedException.class,
-            UnknownErrorException.class,
-            UnsupportedCommandException.class
+            ErrorException.class,
     };
-    protected ArrayList<Integer> buffer = null;
-    protected String cmd = null;
-    protected String rawData = null;
-    private long start;
-    private long end;
-
 
     public OBDCommand(String command) {
         this.cmd = command;
@@ -40,10 +35,8 @@ public abstract class OBDCommand {
 
     public void run(InputStream in, OutputStream out) throws IOException, InterruptedException {
         synchronized (OBDCommand.class) {//Only one command can write and read a data in one time.
-            start = System.currentTimeMillis();
             sendCommand(out);
             readResult(in);
-            end = System.currentTimeMillis();
         }
     }
 
@@ -108,7 +101,7 @@ public abstract class OBDCommand {
     }
 
     void checkForErrors() {
-        for (Class<? extends ResponseException> errorClass : ERROR_CLASSES) {
+        for (Class<? extends ResponseException> errorClass : NOTICED_ERRORS) {
             ResponseException messageError;
 
             try {
@@ -135,22 +128,6 @@ public abstract class OBDCommand {
     }
 
     public abstract String getName();
-
-    public long getStart() {
-        return this.start;
-    }
-
-    public void setStart(long start) {
-        this.start = start;
-    }
-
-    public long getEnd() {
-        return this.end;
-    }
-
-    public void setEnd(long end) {
-        this.end = end;
-    }
 
     @Override
     public boolean equals(Object o) {

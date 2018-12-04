@@ -1,7 +1,7 @@
 package com.example.michal.inz.OBDConnection.Exceptions;
 
-public class UnknownErrorException extends ResponseException {
-    public UnknownErrorException() {
+public class ErrorException extends ResponseException {
+    public ErrorException() {
         super("ERROR");
     }
 }
