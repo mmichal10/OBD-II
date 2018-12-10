@@ -34,4 +34,19 @@
         android:layout_gravity="center_horizontal|center_vertical"
         android:foreground="@drawable/location_icon_end"/>
 
+    <TextView
+        android:id="@+id/speedTV"
+        android:layout_height="50dp"
+        android:gravity="top|right"
+        android:layout_width="match_parent"
+        android:layout_gravity="right"
+        android:text="Speed" />
+
+    <TextView
+        android:id="@+id/rpmTV"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:gravity="top|left"
+        android:text="RPM" />
+
 </FrameLayout>

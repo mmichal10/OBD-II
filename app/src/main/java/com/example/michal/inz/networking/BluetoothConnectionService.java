@@ -261,8 +261,6 @@ public class BluetoothConnectionService extends IntentService {
     }
 
     private void getFuelUsage() {
-        throw new UnsupportedOperationException();
-
         //mStatResponseIntent.putExtra(FUEL_USAGE_TAG, temp.getVin());
     }
 
