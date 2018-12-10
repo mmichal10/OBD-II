@@ -28,6 +28,7 @@ public class ParamsFragment extends Fragment implements FragmentName {
     private TextView mRpmTv;
     private TextView mL_KmTv;
     private TextView mTempTv;
+    private TextView mVinTv;
 
     private IntentFilter mFilter;
 
@@ -46,6 +47,7 @@ public class ParamsFragment extends Fragment implements FragmentName {
         mRpmTv = view.findViewById(R.id.tv_rpm);
         mL_KmTv = view.findViewById(R.id.tv_l_km);
         mTempTv = view.findViewById(R.id.tv_temperature);
+        mVinTv = view.findViewById(R.id.tv_vin);
 
         mFilter = new IntentFilter(BluetoothConnectionService.STATS_UPDATE_INTENT);
 
@@ -66,8 +68,9 @@ public class ParamsFragment extends Fragment implements FragmentName {
     }
 
     private void updateStatsUI(Intent intent) {
-        float temperature, fuel;
+        float temperature, fuel, fuelUsage;
         int rpm, speed;
+        String vin;
 
         try {
             temperature = intent.getFloatExtra(BluetoothConnectionService.TEMPERATURE_TAG, 0);
@@ -102,6 +105,24 @@ public class ParamsFragment extends Fragment implements FragmentName {
             speed = 0;
             mSpeedTv.setText(Integer.toString(speed));
             Log.d(TAG, "Failed retrieve speed from car");
+        }
+
+        try {
+            fuelUsage = intent.getFloatExtra(BluetoothConnectionService.FUEL_USAGE_TAG, 0);
+            mL_KmTv.setText(Float.toString(fuelUsage));
+        } catch (Exception e) {
+            fuelUsage = 0;
+            mL_KmTv.setText(Float.toString(fuelUsage));
+            Log.d(TAG, "Failed retrieve fuel usage from car");
+        }
+
+        try {
+            vin = intent.getStringExtra(BluetoothConnectionService.VIN_TAG);
+            mVinTv.setText(vin);
+        } catch (Exception e) {
+            vin = "null";
+            mL_KmTv.setText(vin);
+            Log.d(TAG, "Failed retrieve vin from car");
         }
     }
 
