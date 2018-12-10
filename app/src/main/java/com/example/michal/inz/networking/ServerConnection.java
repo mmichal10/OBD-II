@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -67,6 +68,8 @@ public class ServerConnection extends BroadcastReceiver {
                 }
             };
             Log.d(TAG,  "Request to be put in queue");
+            stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    3000, 30, 5));
             requestQueue.add(stringRequest);
             Log.d(TAG,  "Request in queue");
         }
