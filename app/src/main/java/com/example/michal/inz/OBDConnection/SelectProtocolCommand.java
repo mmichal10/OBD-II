@@ -13,11 +13,11 @@ public class SelectProtocolCommand extends OBDCommand {
     }
 
     public void calculate() {
-
+        // ignore
     }
 
     public void decodeRawData() {
-
+        // settings commands don't return a value appropriate to place into the buffer, so do nothing
     }
 }
 

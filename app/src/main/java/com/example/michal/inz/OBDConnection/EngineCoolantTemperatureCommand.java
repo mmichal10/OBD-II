@@ -7,6 +7,10 @@ public class EngineCoolantTemperatureCommand extends OBDCommand {
         super("01 05");
     }
 
+    public EngineCoolantTemperatureCommand(EngineCoolantTemperatureCommand other) {
+        super(other);
+    }
+
     @Override
     protected void calculate() {
         // ignore first two bytes [hh hh] of the response

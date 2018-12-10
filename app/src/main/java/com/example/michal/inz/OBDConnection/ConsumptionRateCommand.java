@@ -7,6 +7,10 @@ public class ConsumptionRateCommand extends OBDCommand {
         super("01 5E");
     }
 
+    public ConsumptionRateCommand(ConsumptionRateCommand other) {
+        super(other);
+    }
+
     @Override
     protected void calculate() {
         // ignore first two bytes [hh hh] of the response

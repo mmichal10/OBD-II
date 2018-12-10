@@ -7,8 +7,13 @@ public class SpeedCommand extends OBDCommand {
         super("01 0D");
     }
 
+    public SpeedCommand(SpeedCommand other) {
+        super(other);
+    }
+
     @Override
     protected void calculate() {
+        // Ignore first two bytes [hh hh] of the response.
         metricSpeed = buffer.get(2);
     }
 
