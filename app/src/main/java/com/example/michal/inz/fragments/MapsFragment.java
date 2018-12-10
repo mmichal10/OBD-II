@@ -17,13 +17,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.example.michal.inz.Location;
 import com.example.michal.inz.MyMapView;
 import com.example.michal.inz.R;
 import com.example.michal.inz.networking.BluetoothConnectionService;
+import com.example.michal.inz.fragments.helper.GeoPoint;
 import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.GraphHopper;
@@ -49,12 +49,10 @@ import org.mapsforge.map.layer.overlay.Polyline;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
-import org.oscim.core.GeoPoint;
-import org.oscim.layers.PathLayer;
-import org.oscim.map.Map;
+
+//import org.oscim.core.GeoPoint;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -78,8 +76,6 @@ public class MapsFragment extends Fragment implements FragmentName {
     private boolean choosedLocation = false;
     private boolean prepareFinished = false;
     File myFolder;
-    PathLayer myRoute;
-    private boolean choosingLocationSecond = false;
     Marker endMarker = null;
     Polyline line = null;
 
@@ -287,7 +283,6 @@ public class MapsFragment extends Fragment implements FragmentName {
     }
 
     private void choosePoint() {
-        choosingLocationSecond = true;
         GeoPoint p = new GeoPoint(mapView.getModel().mapViewPosition.getMapPosition().latLong.latitude,
                 mapView.getModel().mapViewPosition.getMapPosition().latLong.longitude);
         end = p;
@@ -315,7 +310,6 @@ public class MapsFragment extends Fragment implements FragmentName {
 
     public void updateLocation() {
         if (!mapView.centerLock) {
-            mapView.setZoomLevel((byte) 18);
             mapView.setCenter(new LatLong(myLocation.getLatitude(), myLocation.getLongitude()));
         }
         else if (yourLocationBtn.getVisibility() == View.GONE){
