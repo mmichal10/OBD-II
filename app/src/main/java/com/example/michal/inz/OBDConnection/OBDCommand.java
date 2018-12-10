@@ -15,63 +15,60 @@ public abstract class OBDCommand {
     private final Class[] NOTICED_ERRORS = {
             UnableToConnectException.class,
             BusInitException.class,
-            MisunderstoodCommandException.class,
+            WrongCommandException.class,
             NoDataException.class,
             StoppedException.class,
             ErrorException.class,
     };
 
     public OBDCommand(String command) {
+        this.buffer = new ArrayList<Integer>();
         this.cmd = command;
-        this.buffer = new ArrayList<>();
+        this.rawData = "";
     }
 
-    private OBDCommand() {
-    }
-
-    public OBDCommand(OBDCommand other) {
-        this(other.cmd);
-    }
-
-    public void run(InputStream in, OutputStream out) throws IOException, InterruptedException {
-        synchronized (OBDCommand.class) {//Only one command can write and read a data in one time.
+    public void run(InputStream in, OutputStream out) throws IOException {
+        synchronized (OBDCommand.class) {
             sendCommand(out);
             readResult(in);
         }
     }
 
     protected void sendCommand(OutputStream out) throws IOException {
-        // write to OutputStream (i.e.: a BluetoothSocket) with an added
-        // Carriage return
         out.write((cmd.concat("\r")).getBytes());
-        out.flush();
-    }
-
-    protected void resendCommand(OutputStream out) throws IOException {
-        out.write("\r".getBytes());
         out.flush();
     }
 
     protected void readResult(InputStream in) throws IOException {
         readRawData(in);
-        checkForErrors();
+        validateResponse();
         decodeRawData();
         calculate();
     }
 
-    protected abstract void calculate();
+    protected void readRawData(InputStream in) throws IOException {
+        byte singleByte = 0;
 
-    protected void decodeRawData() {
-        rawData = rawData.replaceAll("\\s", ""); //removes all [ \t\n\x0B\f\r]
-        rawData = rawData.replaceAll("\\.", "");
-        rawData = rawData.replaceAll("BUSINIT", "");
+        rawData = "";
+        char c;
+        while (((singleByte = (byte)in.read()) != -1)) {
+            c = (char) singleByte;
+            if (c == '>')
+                break;
 
-        if (!rawData.matches("([0-9A-F])+")) {
-            throw new NonNumericResponseException(rawData);
+            rawData += c;
         }
 
-        // read string each two chars
+        rawData = rawData.replaceAll("\\s", "")
+                .replaceAll("CANInitial-FAIL", "");
+    }
+
+    protected void decodeRawData() {
         buffer.clear();
+        rawData = rawData.replaceAll("\\.", "")
+                .replaceAll("\\s", "")
+                .replaceAll("BUSINIT", "");
+
         int begin = 0, end = 2;
         while (end <= rawData.length()) {
             buffer.add(Integer.decode("0x" + rawData.substring(begin, end)));
@@ -80,44 +77,25 @@ public abstract class OBDCommand {
         }
     }
 
-    protected void readRawData(InputStream in) throws IOException {
-        StringBuilder response = new StringBuilder();
-        byte singleByte = 0;
-        char c;
-
-        // read until '>' arrives OR end of stream reached
-        // -1 if the end of the stream is reached
-        while (((singleByte = (byte)in.read()) != -1)) {
-            c = (char) singleByte;
-            if (c == '>') // read until '>' arrives
-                break;
-
-            response.append(c);
-        }
-
-        rawData = response.toString().replaceAll("SEARCHING", "");
-        rawData = rawData.replaceAll("\\s", "");//removes all [ \t\n\x0B\f\r]
-        rawData = rawData.replaceAll("CANInitial-FAIL", "");
-    }
-
-    void checkForErrors() {
-        for (Class<? extends ResponseException> errorClass : NOTICED_ERRORS) {
-            ResponseException messageError;
+    void validateResponse() {
+        BaseException error;
+        for (Class<? extends BaseException> errorClass : NOTICED_ERRORS) {
 
             try {
-                messageError = errorClass.newInstance();
-                messageError.setCommand(this.cmd);
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
+                error = errorClass.newInstance();
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
 
-            if (messageError.isError(rawData)) {
-                throw messageError;
+            if (error.isError(rawData)) {
+                throw error;
             }
         }
     }
+
+    protected abstract void calculate();
+
+    public abstract String getName();
 
     public String getResult() {
         return rawData;
@@ -127,21 +105,17 @@ public abstract class OBDCommand {
         return buffer;
     }
 
-    public abstract String getName();
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        OBDCommand that = (OBDCommand) o;
-
-        return cmd != null ? cmd.equals(that.cmd) : that.cmd == null;
+        return cmd == null ? ((OBDCommand)o).cmd == null : cmd.equals(((OBDCommand)o).cmd);
     }
 
     @Override
     public int hashCode() {
-        return cmd != null ? cmd.hashCode() : 0;
+        return cmd == null ? 0 : cmd.hashCode();
     }
 
 }

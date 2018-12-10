@@ -88,7 +88,7 @@ public class BluetoothConnectionService extends IntentService {
         } catch (IOException e) {
             e.printStackTrace();
             return;
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return;
         }
@@ -101,7 +101,7 @@ public class BluetoothConnectionService extends IntentService {
         } catch (IOException e) {
             e.printStackTrace();
             return;
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return;
         }
