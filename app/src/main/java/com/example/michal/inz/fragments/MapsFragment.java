@@ -1,11 +1,16 @@
 package com.example.michal.inz.fragments;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Path;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,10 +18,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
+import android.widget.TextView;
 
 import com.example.michal.inz.Location;
 import com.example.michal.inz.MyMapView;
 import com.example.michal.inz.R;
+import com.example.michal.inz.networking.BluetoothConnectionService;
 import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.GraphHopper;
@@ -76,6 +83,9 @@ public class MapsFragment extends Fragment implements FragmentName {
     Marker endMarker = null;
     Polyline line = null;
 
+    private StatsUpdateReceiver mStatsUpdateReceiver;
+    private IntentFilter mFilter;
+
     public MapsFragment() {
         // Required empty public constructor
     }
@@ -98,6 +108,11 @@ public class MapsFragment extends Fragment implements FragmentName {
         mapView.setParentFragment(this);
 
         setButtons();
+
+        mFilter = new IntentFilter(BluetoothConnectionService.STATS_UPDATE_INTENT);
+
+        mStatsUpdateReceiver = new StatsUpdateReceiver();
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mStatsUpdateReceiver, mFilter);
 
         try {
 
@@ -157,6 +172,12 @@ public class MapsFragment extends Fragment implements FragmentName {
             e.printStackTrace();
         }
         return view;
+    }
+
+    @Override
+    public void onPause() {
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mStatsUpdateReceiver);
+        super.onPause();
     }
 
     private void finishPrepare() {
@@ -284,6 +305,7 @@ public class MapsFragment extends Fragment implements FragmentName {
     public void onResume() {
         super.onResume();
         updateLocation();
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mStatsUpdateReceiver, mFilter);
     }
 
     @Override
@@ -303,6 +325,39 @@ public class MapsFragment extends Fragment implements FragmentName {
             myLocationMarker.setLatLong(new LatLong(myLocation.getLatitude(), myLocation.getLongitude()));
             myLocationMarker.setVisible(true);
         }
+    }
+
+    public class StatsUpdateReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(BluetoothConnectionService.STATS_UPDATE_INTENT)) {
+                updateStats(intent);
+            }
+        }
+    }
+
+    private void updateStats(Intent intent) {
+        int speed, rpm = -1;
+        TextView speedTv = view.findViewById(R.id.speedTV);
+        TextView rpmTv = view.findViewById(R.id.rpmTV);
+
+        try {
+            speed = intent.getIntExtra(BluetoothConnectionService.SPEED_TAG, 0);
+            speedTv.setText(Integer.toString(speed) + "km/h");
+        } catch (Exception e) {
+            speed = 0;
+            speedTv.setText(Integer.toString(speed));
+        }
+
+        try {
+            rpm = intent.getIntExtra(BluetoothConnectionService.RPM_TAG, 0);
+            rpmTv.setText(Integer.toString(rpm) + " rpm");
+        } catch (Exception e) {
+            rpm = 0;
+            rpmTv.setText(Integer.toString(rpm));
+        }
+
     }
 
 }
